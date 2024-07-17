@@ -11,8 +11,7 @@ import (
 )
 
 const (
-	configFileName   = `birdwatcher.yaml`
-	defaultWorkspace = `bw_workspace`
+	configFileName = `birdwatcher.yaml`
 )
 
 var (
@@ -27,6 +26,22 @@ type Config struct {
 	ConfigPath string `yaml:"-"`
 	// backup workspace path, default $PWD/bw_workspace
 	WorkspacePath string `yaml:"WorkspacePath"`
+}
+
+func GetDefaultConfigPath() string {
+	return path.Join(GetDefaultWorkspacePath(), ".bw_config")
+}
+
+func GetDefaultDebugPath() string {
+	return path.Join(GetDefaultWorkspacePath(), "bw_debug.log")
+}
+
+func GetDefaultWorkspacePath() string {
+	userDir, err := os.UserHomeDir()
+	if err != nil {
+		return "bw_workspace"
+	}
+	return path.Join(userDir, "bw_workspace")
 }
 
 func (c *Config) load() error {
@@ -83,7 +98,7 @@ func (c *Config) createDefault() error {
 	defer file.Close()
 
 	// setup default value
-	c.WorkspacePath = defaultWorkspace
+	c.WorkspacePath = GetDefaultWorkspacePath()
 
 	bs, err := yaml.Marshal(c)
 	if err != nil {
@@ -103,15 +118,11 @@ func (c *Config) setupWorkspaceFolder() {
 	}
 }
 
-func NewConfig(configPath string) (*Config, error) {
+func NewConfig() (*Config, error) {
 	config := &Config{
-		ConfigPath: configPath,
+		ConfigPath: GetDefaultConfigPath(),
 	}
-	err := config.load()
-	// config path not exist, may first time to run
-	if errors.Is(err, errConfigPathNotExist) {
-		err = config.createDefault()
-	}
+	err := config.createDefault()
 
 	config.setupWorkspaceFolder()
 

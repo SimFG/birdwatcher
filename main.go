@@ -27,6 +27,13 @@ func main() {
 
 	var appFactory func(config *configs.Config) bapps.BApp
 
+	config, err := configs.NewConfig()
+	if err != nil {
+		// run by default, just printing warning.
+		fmt.Println("[WARN] load config file failed, running in default setting", err.Error())
+	}
+	start := states.Start(config)
+
 	switch {
 	// Print current birdwatcher version
 	case *printVersion:
@@ -41,7 +48,7 @@ func main() {
 	default:
 		defer handleExit()
 		// open file and create if non-existent
-		file, err := os.OpenFile("bw_debug.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+		file, err := os.OpenFile(configs.GetDefaultDebugPath(), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -53,14 +60,6 @@ func main() {
 			return bapps.NewPromptApp(config, bapps.WithLogger(logger))
 		}
 	}
-
-	config, err := configs.NewConfig(".bw_config")
-	if err != nil {
-		// run by default, just printing warning.
-		fmt.Println("[WARN] load config file failed, running in default setting", err.Error())
-	}
-
-	start := states.Start(config)
 
 	app := appFactory(config)
 	app.Run(start)

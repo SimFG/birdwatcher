@@ -39,6 +39,7 @@ func (s *InstanceState) DownloadSegmentCommand(ctx context.Context, p *DownloadS
 	}
 
 	folder := fmt.Sprintf("dlsegment_%s", time.Now().Format("20060102150406"))
+	folder = path.Join(s.config.WorkspacePath, folder)
 	for _, segment := range segments {
 		err := s.downloadSegment(ctx, minioClient, bucketName, segment, folder)
 		if err != nil {
