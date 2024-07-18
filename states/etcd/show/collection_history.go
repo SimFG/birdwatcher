@@ -61,7 +61,7 @@ func (rs *CollectionHistory) PrintAs(format framework.Format) string {
 	switch format {
 	case framework.FormatDefault, framework.FormatPlain:
 		sb := &strings.Builder{}
-		printCollection(sb, rs.Collection)
+		PrintCollection(sb, rs.Collection)
 		for _, item := range rs.HistoryItems {
 			t, _ := utils.ParseTS(item.Ts)
 			fmt.Fprintln(sb, "Snapshot at", t.Format("2006-01-02 15:04:05"))
@@ -69,7 +69,7 @@ func (rs *CollectionHistory) PrintAs(format framework.Format) string {
 				fmt.Fprintln(sb, "Collection Dropped")
 				continue
 			}
-			printCollection(sb, &item.Collection)
+			PrintCollection(sb, &item.Collection)
 		}
 	default:
 	}

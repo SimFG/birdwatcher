@@ -107,6 +107,9 @@ func (s *InstanceState) SetupCommands() {
 		// dry-mode
 		getDryModeCmd(s, s.etcdState),
 		etcd.DownloadCommand(cli, basePath),
+
+		// search
+		etcd.SearchCommand(cli, basePath),
 	)
 
 	// cmd.AddCommand(etcd.RawCommands(cli)...)
