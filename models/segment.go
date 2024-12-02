@@ -39,6 +39,8 @@ type Segment struct {
 
 	// sorted by PK
 	IsSorted bool
+	// is importing
+	IsImporting bool
 
 	// etcd segment key
 	key string
@@ -111,6 +113,7 @@ func NewSegmentFromV2_2(info *datapbv2.SegmentInfo, key string,
 	s.DmlPosition = NewMsgPosition(info.GetDmlPosition())
 	s.Level = SegmentLevel(info.GetLevel())
 	s.IsSorted = info.GetIsSorted()
+	s.IsImporting = info.GetIsImporting()
 
 	s.lazyLoad = func(s *Segment) {
 		mFunc := func(fbl datapbv2.FieldBinlog, _ int) *FieldBinlog {

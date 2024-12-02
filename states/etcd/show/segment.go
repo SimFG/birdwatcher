@@ -25,6 +25,7 @@ type SegmentParam struct {
 	Detail              bool   `name:"detail" default:"false" desc:"flags indicating whether printing detail binlog info"`
 	State               string `name:"state" default:"" desc:"target segment state"`
 	Level               string `name:"level" default:"" desc:"target segment level"`
+	IsImporting         string `name:"is_importing" default:"0" desc:"target segment is importing, 0 is all, 1 is importing, 2 is not importing"`
 }
 
 type segStats struct {
@@ -43,7 +44,8 @@ func (c *ComponentShow) SegmentCommand(ctx context.Context, p *SegmentParam) err
 			(p.PartitionID == 0 || segment.PartitionID == p.PartitionID) &&
 			(p.SegmentID == 0 || segment.ID == p.SegmentID) &&
 			(p.State == "" || strings.EqualFold(segment.State.String(), p.State)) &&
-			(p.Level == "" || strings.EqualFold(segment.Level.String(), p.Level))
+			(p.Level == "" || strings.EqualFold(segment.Level.String(), p.Level)) &&
+			(p.IsImporting == "0" || (segment.IsImporting && p.IsImporting == "1") || (!segment.IsImporting && p.IsImporting == "2"))
 	})
 	if err != nil {
 		fmt.Println("failed to list segments", err.Error())
